@@ -53,7 +53,7 @@ export async function DashboardSidebar() {
   {icon: LayoutCellsLarge,href: "/dashboard/tenant",label: "Dashboard",},
   {icon: Briefcase,href: "/dashboard/tenant/overview",label: "OverView",},
   {icon: Bookmark,href: "/dashboard/tenant/bookings",label: "My Bookings",},
-  {icon: FileText,href: "/dashboard/tenant/favourite",label: "Favourite",},
+  {icon: FileText,href: "/dashboard/tenant/favourites",label: "Favourite",},
   {icon: CreditCard,href: "/dashboard/tenant/profile",label: "Profile",},
 ];
 

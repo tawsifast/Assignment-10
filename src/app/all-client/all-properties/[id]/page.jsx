@@ -2,10 +2,12 @@ import { getPropertyById } from "@/lib/api/property";
 import PropertyActionBlock from "@/components/property/PropertyActionBlock";
 import { MapPin, ArrowLeft, ShieldCheck, Sparkles, Building } from "lucide-react";
 import Link from "next/link";
+import { getUserSession } from "@/lib/core/session";
 
 export default async function PropertyDetailsPage({ params }) {
   const { id } = await params;
   const property = await getPropertyById(id);
+  const user = await getUserSession();
 
   if (!property) {
     return (
@@ -104,7 +106,7 @@ export default async function PropertyDetailsPage({ params }) {
 
           {/* Right Column: Sticky Pricing & Interactive Actions (1/3 Width) */}
           <div className="lg:col-span-1 lg:sticky lg:top-28">
-            <PropertyActionBlock property={property} />
+            <PropertyActionBlock property={property} user={user} />
           </div>
 
         </div>
