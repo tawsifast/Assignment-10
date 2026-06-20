@@ -83,6 +83,7 @@ export default function PropertyActionBlock({ property, user }) {
       amount: property.price,
       propertyId: property._id,
       email: user.email,
+      bookingId: saveBooking.insertedId, // ✅ নতুন লাইন
     });
 
     // 4️⃣ Redirect to Stripe payment page

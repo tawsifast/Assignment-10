@@ -4,14 +4,14 @@ import React, { useState } from 'react';
 import { Table, Button } from "@heroui/react";
 import { Trash2, Heart, MapPin, Bed, Bath, DollarSign, Building } from "lucide-react";
 import toast from "react-hot-toast";
+import { deleteFavourite } from '@/lib/api/favourite';
 
 const FavouriteTable = ({ initialFavorites }) => {
   const [favorites, setFavorites] = useState(initialFavorites || []);
 
   const handleRemoveFavorite = async (id, title) => {
     try {
-      // Add your backend delete action call here:
-      // await deleteFavouriteProperty(id);
+      const removeFavourite = await deleteFavourite(id)
       
       setFavorites(prev => prev.filter(item => item._id !== id || item.id !== id));
       toast.success(`Removed "${title}" from favorites`);

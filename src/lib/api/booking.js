@@ -1,4 +1,12 @@
+import { serverFetch } from "../core/server";
 
+
+
+
+
+export const getBookingByBuyer = async() => {
+    return serverFetch("/bookings")
+}
 export const createBooking = async (bookingData) => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/bookings`, {
     method: "POST",
@@ -26,3 +34,5 @@ export const createStripeSession = async (data) => {
 
   return res.json();
 };
+
+

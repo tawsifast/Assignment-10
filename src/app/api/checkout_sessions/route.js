@@ -10,6 +10,9 @@ export async function POST(req) {
     payment_method_types: ["card"],
     mode: "payment",
     customer_email: body.email,
+    metadata: {
+    bookingId: body.bookingId, // ✅ নতুন লাইন
+  },
 
     line_items: [
       {
@@ -24,8 +27,8 @@ export async function POST(req) {
       },
     ],
 
-    success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/success`,
-    cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/cancel`,
+    success_url: `${process.env.CLIENT_SIDE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${process.env.CLIENT_SIDE_URL}`,
   });
 
   return NextResponse.json({ url: session.url });
