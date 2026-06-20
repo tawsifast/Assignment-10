@@ -66,6 +66,7 @@ export default function PropertyActionBlock({ property, user }) {
         title: property.title,
         location: property.location,
         price: property.price,
+        ownerEmail: property.ownerEmail,
         moveInDate,
         contactNumber,
         userEmail: user?.email,

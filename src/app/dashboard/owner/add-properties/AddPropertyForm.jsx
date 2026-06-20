@@ -31,7 +31,7 @@ export default function AddPropertyForm({owner}) {
       description: rawData.description,
       location: rawData.location,
       propertyType: rawData.propertyType,
-      rentPrice: Number(rawData.rentPrice),
+      price: Number(rawData.price),
       rentType: rawData.rentType,
       bedrooms: Number(rawData.bedrooms),
       bathrooms: Number(rawData.bathrooms),
@@ -118,7 +118,7 @@ export default function AddPropertyForm({owner}) {
               </Select>
 
               {/* Rent Price */}
-              <TextField isRequired name="rentPrice" type="number">
+              <TextField isRequired name="price" type="number">
                 <Label>Rent Price ($)</Label>
                 <Input placeholder="550" />
                 <FieldError />

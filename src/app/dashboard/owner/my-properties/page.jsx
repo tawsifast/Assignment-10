@@ -8,6 +8,7 @@ const MyPropertiesPage = async () => {
     // লগইন থাকা ওনারের সেশন ও ডাটা নেওয়া হচ্ছে
     const user = await getUserSession();
     const properties = await getPropertyByOwnerId(user?.id) || [];
+    console.log(properties,"pro");
 
     return (
         <div className="w-full p-6 bg-[#0a0a0f]/40 border border-white/5 rounded-2xl backdrop-blur-md">

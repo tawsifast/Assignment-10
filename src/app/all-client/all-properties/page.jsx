@@ -4,7 +4,11 @@ import { getProperty } from '@/lib/api/property';
 
 export default async function AllPropertyPage() {
   const properties = await getProperty() || [];
+  // console.log(properties);
   const approvedProperties = properties.filter(p => p.status === "Approved");
+  // console.log(approvedProperties, "approve");
+  console.log(properties.map((p) => ({title: p.title,status: p.status}),"debug")
+);
 
   return (
     // ব্যাকগ্রাউন্ড পরিবর্তন: bg-[#121824] (মিনিমাল ডার্ক-স্লেট গ্রে)

@@ -33,12 +33,11 @@ export async function DashboardSidebar() {
   console.log(user?.role, "role");
 
   const adminNavItems = [
-  {icon: LayoutCellsLarge,href: "/dashboard/admin",label: "Dashboard",},
-  {icon: Persons,href: "/dashboard/admin/users",label: "Users",},
-  {icon: Display,href: "/dashboard/admin/companies",label: "Companies",},
-  {icon: Briefcase,href: "/dashboard/admin/jobs",label: "Jobs",},
-  {icon: CreditCard,href: "/dashboard/admin/payments",label: "Payments",},
-  {icon: Gear,href: "/dashboard/admin/settings",label: "Settings",},
+  {icon: LayoutCellsLarge,href: "/dashboard/admin",label: "Dashboard"},
+  {icon: Persons,href: "/dashboard/admin/all-users",label: "Users"},
+  {icon: Display,href: "/dashboard/admin/all-properties",label: "Properties"},
+  {icon: Briefcase,href: "/dashboard/admin/all-bookings",label: "Bookings"},
+  {icon: CreditCard,href: "/dashboard/admin/transactions",label: "Transactions"}
 ];
 
   const ownerNavLinks = [
@@ -82,7 +81,7 @@ export async function DashboardSidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:block w-64 shrink-0 border-r p-4">
+      <aside className="hidden lg:block w-50 shrink-0 border-r p-4">
         {navContent}
       </aside>
 

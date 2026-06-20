@@ -38,7 +38,7 @@ const SignupPage = () => {
     console.log(data, "data");
     if (data) {
       toast.success("Signup Successful!");
-      // router.push("/");
+      router.push("/");
     }
     if (error) {
       toast.error(error.message || "Signup Unsuccessful");

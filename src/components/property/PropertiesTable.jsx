@@ -16,6 +16,7 @@ import {
 import { Edit2, Trash2, Home } from "lucide-react";
 import toast from "react-hot-toast";
 import { updatedProperty } from "@/lib/actions/property";
+import { deleteOwnerBooking } from "@/lib/actions/ownerBooking";
 
 
 export default function PropertiesTable({ properties: initialProperties }) {
@@ -28,6 +29,7 @@ export default function PropertiesTable({ properties: initialProperties }) {
 
   // ডিলিট হ্যান্ডলার
   const handleDelete = async (id) => {
+    const removeMyProperty = await deleteOwnerBooking(id)
     if (confirm("Are you sure you want to delete this property?")) {
       setProperties(properties.filter((item) => getItemId(item) !== id));
       toast.success("Property deleted successfully!");
@@ -58,7 +60,7 @@ export default function PropertiesTable({ properties: initialProperties }) {
       description: rawData.description,
       location: rawData.location,
       propertyType: rawData.propertyType || selectedProperty.propertyType,
-      rentPrice: Number(rawData.rentPrice),
+      price: Number(rawData.price),
       rentType: rawData.rentType || selectedProperty.rentType,
       bedrooms: Number(rawData.bedrooms),
       bathrooms: Number(rawData.bathrooms),
@@ -119,7 +121,7 @@ export default function PropertiesTable({ properties: initialProperties }) {
       <Table aria-label="Properties List Table" >
         <Table.ScrollContainer>
           <Table.Content
-            className="min-w-[700px]"
+            className="min-w-175"
             aria-label="Owner Properties Layout"
           >
             <Table.Header>
@@ -149,7 +151,7 @@ export default function PropertiesTable({ properties: initialProperties }) {
                       {item.propertyType}
                     </Table.Cell>
                     <Table.Cell className="text-slate-300 font-semibold">
-                      ${item.rentPrice} /{" "}
+                      ${item.price} /{" "}
                       <span className="text-xs font-normal text-slate-500">
                         {item.rentType}
                       </span>
@@ -287,9 +289,9 @@ export default function PropertiesTable({ properties: initialProperties }) {
 
                       <TextField
                         isRequired
-                        name="rentPrice"
+                        name="price"
                         type="number"
-                        defaultValue={selectedProperty.rentPrice}
+                        defaultValue={selectedProperty.price}
                       >
                         <Label>Rent Price ($)</Label>
                         <Input />

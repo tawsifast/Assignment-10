@@ -4,6 +4,9 @@ import { serverFetch } from "../core/server";
 
 
 
+export const getAllBookings = async() => {
+    return serverFetch("/allbookings")
+}
 export const getBookingByBuyer = async() => {
     return serverFetch("/bookings")
 }
