@@ -11,7 +11,7 @@ export async function POST(req) {
     mode: "payment",
     customer_email: body.email,
     metadata: {
-    bookingId: body.bookingId, // ✅ নতুন লাইন
+    bookingId: body.bookingId,
   },
 
     line_items: [

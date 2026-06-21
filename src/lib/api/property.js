@@ -1,5 +1,6 @@
 import { serverFetch } from "../core/server"
 
+
 export const getProperty = async() =>{
     return serverFetch("/properties")
 };

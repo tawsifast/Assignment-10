@@ -23,8 +23,23 @@ export default async function PaymentSuccessPage({ searchParams }) {
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ paymentStatus: "paid" }),
         },
       );
+      // Transaction রেকর্ড সেভ
+      await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/transactions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bookingId: session.metadata.bookingId,
+          stripeSessionId: session.id,
+          userEmail: session.customer_details?.email,
+          amount: session.amount_total ? session.amount_total / 100 : 0,
+          currency: session.currency,
+          paymentStatus: session.payment_status,
+          transactionDate: new Date().toISOString(),
+        }),
+      });
     }
   } catch (error) {
     console.error("Stripe session retrieval error:", error);
