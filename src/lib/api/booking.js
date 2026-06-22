@@ -1,14 +1,12 @@
-import { serverFetch } from "../core/server";
-
-
-
+import { protectedFetch, serverFetch } from "../core/server";
 
 
 export const getAllBookings = async() => {
-    return serverFetch("/allbookings")
+    return protectedFetch("/allbookings")
 }
-export const getBookingByBuyer = async() => {
-    return serverFetch("/bookings")
+
+export const getBookingByBuyer = async(email) => {
+    return serverFetch(`/tenantBookings/${email}`)
 }
 export const createBooking = async (bookingData) => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/bookings`, {

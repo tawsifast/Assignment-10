@@ -80,7 +80,7 @@ const BookingTable = ({ initialBookings }) => {
                     {/* Booking Status */}
                     <Table.Cell className="py-4 px-6">
                       <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium border ${
-                        item.bookingStatus === 'Confirmed'
+                        item.bookingStatus === 'Approved'
                           ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                           : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
                       }`}>

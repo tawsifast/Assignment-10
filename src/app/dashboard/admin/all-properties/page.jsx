@@ -1,11 +1,12 @@
 import React from 'react';
-import { getProperty } from '@/lib/api/property';
+import { getAllProperty } from '@/lib/api/property';
 import AdminPropertiesTable from './AdminPropertiesTable';
 
 
 const AllPropertiesPage = async () => {
     // Fetch properties directly server-side
-    const properties = await getProperty() || [];
+    const properties = await getAllProperty() || [];
+
     
     return (
         <div className="p-6 space-y-6 min-h-screen bg-[#030307]">

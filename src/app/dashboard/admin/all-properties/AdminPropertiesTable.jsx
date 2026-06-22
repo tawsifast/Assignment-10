@@ -190,7 +190,7 @@ export default function AdminPropertiesTable({ initialProperties }) {
                         </span>
                         {item.status === "Rejected" && item.rejectionReason && (
                           <p className="text-[10px] text-rose-400/80 italic max-w-37.5 line-clamp-1" title={item.rejectionReason}>
-                            Reason: {item.rejectionReason}
+                           
                           </p>
                         )}
                       </div>

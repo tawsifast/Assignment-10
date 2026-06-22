@@ -1,14 +1,19 @@
-import { serverFetch } from "../core/server"
+import { protectedFetch, serverFetch } from "../core/server"
+
+
 
 
 export const getProperty = async(query) =>{
     return serverFetch(`/properties?${query.toString()}`)
 };
+export const getAllProperty = async() =>{
+    return protectedFetch(`/allProperties`)
+};
 
 export const getPropertyById = async(propertyId) =>{
-    return serverFetch(`/properties/${propertyId}`)
+    return protectedFetch(`/properties/${propertyId}`)
 }
 
 export const getPropertyByOwnerId = async (ownerId) => {
-  return serverFetch(`/my/properties?ownerId=${ownerId}`);
+  return protectedFetch(`/my/properties?ownerId=${ownerId}`);
 };

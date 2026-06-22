@@ -1,11 +1,6 @@
-import React from 'react';
+import { redirect } from "next/navigation";
 
-const TenantPage = () => {
-    return (
-        <div>
-            tenant
-        </div>
-    );
-};
 
-export default TenantPage;
+export default function TenantPage() {
+  redirect("/dashboard/tenant/overview");
+}

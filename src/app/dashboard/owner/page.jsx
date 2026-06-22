@@ -1,11 +1,6 @@
-import React from 'react';
+import { redirect } from "next/navigation";
 
-const OwnerPage = () => {
-    return (
-        <div>
-            owner
-        </div>
-    );
-};
 
-export default OwnerPage;
+export default function TenantPage() {
+  redirect("/dashboard/owner/overview");
+}

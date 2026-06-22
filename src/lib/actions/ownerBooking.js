@@ -1,8 +1,8 @@
-import { serverFetch, serverMutation } from "../core/server";
+import { protectedFetch, serverFetch, serverMutation } from "../core/server";
 
 
 export const getOwnerBookingProperty = async(ownerEmail)=>{
-    return serverFetch(`/owner/bookings?ownerEmail=${ownerEmail}`)
+    return protectedFetch(`/owner/bookings?ownerEmail=${ownerEmail}`)
 }
 
 export const deleteOwnerBooking = async(id) =>{

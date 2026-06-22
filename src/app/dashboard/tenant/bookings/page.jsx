@@ -2,10 +2,12 @@ import { getBookingByBuyer } from '@/lib/api/booking';
 import React from 'react';
 import { ClipboardList } from "lucide-react";
 import BookingTable from './BookingTable';
+import { getUserSession } from '@/lib/core/session';
 
 
 const BookingPage = async () => {
-    const bookings = await getBookingByBuyer();
+    const user = await getUserSession()
+    const bookings = await getBookingByBuyer(user?.email);
     
     return (
         <div className="min-h-screen bg-[#030307] text-slate-100 p-6 sm:p-8 antialiased">

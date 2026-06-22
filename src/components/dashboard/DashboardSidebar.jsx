@@ -41,7 +41,6 @@ export async function DashboardSidebar() {
 ];
 
   const ownerNavLinks = [
-  { icon: House, href: "/dashboard/owner", label: "Dashboard" },
   {icon: MagnifierPlus,href: "/dashboard/owner/overview",label: "Overview"},
   {icon: PlusShape, href: "/dashboard/owner/add-properties", label: "Add Property"},
   {icon: House,href: "/dashboard/owner/my-properties",label: "My Property"},
@@ -49,7 +48,6 @@ export async function DashboardSidebar() {
   {icon: Person, href: "/dashboard/owner/profile",label: "Profile"},
 ];
   const tenantNavLinks = [
-  {icon: LayoutCellsLarge,href: "/dashboard/tenant",label: "Dashboard",},
   {icon: Briefcase,href: "/dashboard/tenant/overview",label: "OverView",},
   {icon: Bookmark,href: "/dashboard/tenant/bookings",label: "My Bookings",},
   {icon: FileText,href: "/dashboard/tenant/favourites",label: "Favourite",},

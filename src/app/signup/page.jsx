@@ -15,6 +15,7 @@ import {
 } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { FcGoogle } from "react-icons/fc";
 
 const SignupPage = () => {
   const router = useRouter();
@@ -42,6 +43,23 @@ const SignupPage = () => {
     }
     if (error) {
       toast.error(error.message || "Signup Unsuccessful");
+    }
+  };
+
+  const handleGogleSignIn = async () => {
+    try {
+      const data = await authClient.signIn.social({
+        provider: "google",
+        newUserOptions: {
+          data: {
+            role: "tenant"
+          }
+        }
+      });
+      console.log("Google Auth Init:", data);
+    } catch (err) {
+      toast.error("Google sign in failed");
+      console.error(err);
     }
   };
 
@@ -145,13 +163,32 @@ const SignupPage = () => {
         </TextField>
 
         {/* Action Buttons */}
-        <div className="flex gap-2 pt-2">
-          <Button type="submit" className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-semibold rounded-xl px-5 cursor-pointer">
-            <Check />
-            Submit
-          </Button>
-          <Button type="reset" variant="secondary" className="cursor-pointer rounded-xl">
-            Reset
+        <div className="flex flex-col gap-2 pt-2">
+          <div className="flex gap-2">
+            <Button type="submit" className="flex-1 bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-semibold rounded-xl px-5 cursor-pointer">
+              <Check />
+              Submit
+            </Button>
+            <Button type="reset" variant="secondary" className="cursor-pointer rounded-xl">
+              Reset
+            </Button>
+          </div>
+
+          {/* Divider Line */}
+          <div className="flex items-center my-1">
+            <div className="flex-1 h-px bg-white/10"></div>
+            <span className="px-3 text-xs text-slate-500 uppercase tracking-wider">Or</span>
+            <div className="flex-1 h-px bg-white/10"></div>
+          </div>
+
+          {/* Google Access Action Trigger */}
+          <Button 
+            type="button"
+            onClick={handleGogleSignIn}
+            className="w-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 font-medium rounded-xl h-10 flex items-center justify-center gap-2 transition cursor-pointer"
+          >
+            <FcGoogle />
+            <span>Sign up with Google</span>
           </Button>
         </div>
       </Form>

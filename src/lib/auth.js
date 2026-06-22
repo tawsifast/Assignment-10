@@ -14,6 +14,18 @@ export const auth = betterAuth({
     emailAndPassword: { 
     enabled: true, 
   }, 
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      // Intercept profile to map custom role fields
+      mapProfileToUser: (profile) => {
+        return {
+          role: "tenant", 
+        };
+      },
+    },
+  },
   user: {
     additionalFields: {
       role: {
@@ -25,5 +37,15 @@ export const auth = betterAuth({
   },
   plugins:[
     admin()
-  ]
+  ],
+  // session:{
+  //   cookieCache:{
+  //     enabled: true,
+  //     strategy: "jwt",
+  //     maxAge: 60 * 24 * 30
+  //   }
+  // },
+  // plugins:[
+  //   jwt()
+  // ]
 });
