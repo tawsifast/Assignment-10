@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation"; // ✅ কারেন্ট রাউট ট্র্যাক করার জন্য ইম্পোর্ট করা হলো
 import {
   Navbar as HeroNavbar,
   NavbarBrand,
@@ -32,6 +33,7 @@ const getDashboardPath = (role) => {
 };
 
 export default function Navbar() {
+  const pathname = usePathname(); // ✅ বর্তমান পেজের পাথ ডিটেক্ট করা হচ্ছে
   const { data: session } = authClient?.useSession();
   const user = session?.user;
 
@@ -71,7 +73,7 @@ export default function Navbar() {
       <NavbarContent justify="start">
         <NavbarBrand>
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-linear-to-br from-cyan-400 to-purple-600 flex items-center justify-center text-white font-black text-lg">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-purple-600 flex items-center justify-center text-white font-black text-lg">
               N
             </div>
             <span className="font-bold tracking-wider text-white text-lg uppercase">
@@ -81,18 +83,32 @@ export default function Navbar() {
         </NavbarBrand>
       </NavbarContent>
 
-      {/* Desktop Links (লগইন স্ট্যাটাস অনুযায়ী ডাইনামিক) */}
+      {/* Desktop Links (অ্যাক্টিভ রুট হাইলাইটিং সহ) */}
       <NavbarContent className="hidden sm:flex gap-6" justify="center">
-        <NavbarItem className="flex gap-6">
-          {navLinks.map((link, i) => (
-            <Link
-              key={i}
-              href={link.href}
-              className="text-slate-300 hover:text-cyan-400 transition text-sm font-medium tracking-wide"
-            >
-              {link.label}
-            </Link>
-          ))}
+        <NavbarItem className="flex gap-6 h-full items-center">
+          {navLinks.map((link, i) => {
+            // চেক করা হচ্ছে কারেন্ট পাথ এই লিংকের সাথে ম্যাচ করে কিনা
+            const isActive = pathname === link.href;
+
+            return (
+              <Link
+                key={i}
+                href={link.href}
+                className={`relative py-2 text-sm font-medium tracking-wide transition-all duration-300 ${
+                  isActive
+                    ? "text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]"
+                    : "text-slate-300 hover:text-white"
+                }`}
+              >
+                {link.label}
+                
+                {/* 🌟 অ্যাক্টিভ লিংকের নিচে সাইবার থিমের ইন্ডিকেটর লাইন */}
+                {isActive && (
+                  <span className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full shadow-[0_0_8px_rgba(168,85,247,0.8)] animate-pulse" />
+                )}
+              </Link>
+            );
+          })}
         </NavbarItem>
       </NavbarContent>
 
@@ -100,7 +116,7 @@ export default function Navbar() {
       <NavbarContent justify="end">
         {user ? (
           <>
-            {/* ✅ DESKTOP / LARGE DEVICE — ছবি, Welcome নাম, এবং সরাসরি Logout বাটন */}
+            {/* ✅ DESKTOP / LARGE DEVICE */}
             <div className="hidden sm:flex items-center gap-3">
               <Avatar size="sm" className="w-9 h-9">
                 <Avatar.Image src={user?.image} alt={user?.name} />
@@ -126,7 +142,7 @@ export default function Navbar() {
               </Button>
             </div>
 
-            {/* ✅ MOBILE — শুধুমাত্র ছোট স্ক্রিনে এই ড্রপডাউন মেনুটি দেখাবে */}
+            {/* ✅ MOBILE DROPDOWN */}
             <div className="sm:hidden">
               <Dropdown
                 placement="bottom-end"
@@ -195,7 +211,6 @@ export default function Navbar() {
             </div>
           </>
         ) : (
-          /* ❌ ইউজার লগইন না থাকলে এই বাটনগুলো দেখাবে */
           <div className="flex items-center gap-4">
             <Link
               href="/signin"
@@ -206,7 +221,7 @@ export default function Navbar() {
 
             <Link href="/signup">
               <Button
-                className="bg-linear-to-r from-cyan-500 to-purple-600 text-white"
+                className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white"
                 size="sm"
               >
                 Register
@@ -216,18 +231,25 @@ export default function Navbar() {
         )}
       </NavbarContent>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu (অ্যাক্টিভ রুট হাইলাইটিং সহ) */}
       <NavbarMenu className="bg-[#0a0a0f]/95 pt-6 space-y-4">
-        {navLinks.map((link, i) => (
-          <NavbarMenuItem key={i}>
-            <Link
-              className="w-full text-base text-slate-300 hover:text-cyan-400 transition"
-              href={link.href}
-            >
-              {link.label}
-            </Link>
-          </NavbarMenuItem>
-        ))}
+        {navLinks.map((link, i) => {
+          const isActive = pathname === link.href;
+          return (
+            <NavbarMenuItem key={i}>
+              <Link
+                className={`w-full text-base transition-all ${
+                  isActive
+                    ? "text-cyan-400 font-semibold drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]"
+                    : "text-slate-300 hover:text-white"
+                }`}
+                href={link.href}
+              >
+                {link.label}
+              </Link>
+            </NavbarMenuItem>
+          );
+        })}
 
         {user && (
           <NavbarMenuItem>

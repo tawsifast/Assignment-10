@@ -1,12 +1,11 @@
-import { getBookingByBuyer } from '@/lib/api/booking';
 import React from 'react';
-import { ClipboardList } from "lucide-react";
 import BookingTable from './BookingTable';
 import { getUserSession } from '@/lib/core/session';
-
+import { getBookingByBuyer } from '@/lib/api/booking';
+import { ClipboardList } from 'lucide-react';
 
 const BookingPage = async () => {
-    const user = await getUserSession()
+     const user = await getUserSession()
     const bookings = await getBookingByBuyer(user?.email);
     
     return (

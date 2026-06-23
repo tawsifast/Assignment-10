@@ -1,105 +1,38 @@
-
 import { getUserSession } from "@/lib/core/session";
-import {
-  Bars,
-  Bell,
-  Briefcase,
-  Envelope,
-  Gear,
-  House,
-  Magnifier,
-  Person,
-  LayoutCellsLarge,
-  Bookmark,     
-  FileText,     
-  CreditCard, 
-  Persons,      
-  Display,     
-  Activity,     
-  PlusSquare,    
-  Building,      
-  CalendarCheck, 
-  User,
-  MagnifierPlus,
-  Calendar,
-  PlusShape,
-} from "@gravity-ui/icons";
 import { Button, Drawer } from "@heroui/react";
-import Link from "next/link";
+import { Bars } from "@gravity-ui/icons";
+import { SidebarLinks } from "./SidebarLinks";
+
 
 export async function DashboardSidebar() {
-
   const user = await getUserSession();
-  console.log(user?.role, "role");
-
-  const adminNavItems = [
-  {icon: LayoutCellsLarge,href: "/dashboard/admin",label: "Dashboard"},
-  {icon: Persons,href: "/dashboard/admin/all-users",label: "Users"},
-  {icon: Display,href: "/dashboard/admin/all-properties",label: "Properties"},
-  {icon: Briefcase,href: "/dashboard/admin/all-bookings",label: "Bookings"},
-  {icon: CreditCard,href: "/dashboard/admin/transactions",label: "Transactions"}
-];
-
-  const ownerNavLinks = [
-  {icon: MagnifierPlus,href: "/dashboard/owner/overview",label: "Overview"},
-  {icon: PlusShape, href: "/dashboard/owner/add-properties", label: "Add Property"},
-  {icon: House,href: "/dashboard/owner/my-properties",label: "My Property"},
-  {icon: Calendar, href: "/dashboard/owner/bookings",label: "Bookings"},
-  {icon: Person, href: "/dashboard/owner/profile",label: "Profile"},
-];
-  const tenantNavLinks = [
-  {icon: Briefcase,href: "/dashboard/tenant/overview",label: "OverView",},
-  {icon: Bookmark,href: "/dashboard/tenant/bookings",label: "My Bookings",},
-  {icon: FileText,href: "/dashboard/tenant/favourites",label: "Favourite",},
-  {icon: CreditCard,href: "/dashboard/tenant/profile",label: "Profile",},
-];
-
-  const navLinksMap = {
-    tenant : tenantNavLinks,
-    owner : ownerNavLinks,
-    admin : adminNavItems,
-  }
-
-  const navItems = navLinksMap[user?.role?.toLowerCase() || "tenant"]
-  const navContent = (
-    <nav className="flex flex-col gap-1">
-      {navItems.map((item) => (
-        <Link
-          key={item.label}
-          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-default"
-          href={item.href}
-        >
-          <item.icon className="size-5 text-muted" />
-          {item.label}
-        </Link>
-      ))}
-    </nav>
-  );
+  const userRole = user?.role?.toLowerCase() || "tenant";
 
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:block w-50 shrink-0 border-r p-4">
-        {navContent}
+      <aside className="hidden lg:block w-64 shrink-0 border-r border-divider p-4 bg-[#0a0a0f]">
+        <SidebarLinks role={userRole} />
       </aside>
 
       {/* Mobile Sidebar */}
-      <div className="lg:hidden p-2">
+      <div className="lg:hidden p-3 border-b border-divider bg-[#0a0a0f] flex items-center justify-between w-full">
         <Drawer>
-          <Button variant="flat">
-            <Bars />
-           <span className="text-red-500">Sidebar</span>
+          <Button isIconOnly variant="light" size="md">
+            <Bars className="size-5 text-foreground" />
           </Button>
 
           <Drawer.Backdrop>
-            <Drawer.Content placement="left">
+            <Drawer.Content placement="left" className="max-w-[280px]">
               <Drawer.Dialog>
                 <Drawer.CloseTrigger />
-                <Drawer.Header>
-                  <Drawer.Heading>Navigation</Drawer.Heading>
+                <Drawer.Header className="px-5 pt-6 pb-2">
+                  <Drawer.Heading className="text-base font-bold text-foreground">Navigation</Drawer.Heading>
                 </Drawer.Header>
 
-                <Drawer.Body>{navContent}</Drawer.Body>
+                <Drawer.Body className="px-4 py-2">
+                  <SidebarLinks role={userRole} />
+                </Drawer.Body>
               </Drawer.Dialog>
             </Drawer.Content>
           </Drawer.Backdrop>

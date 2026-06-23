@@ -23,18 +23,13 @@ export default function PropertiesTable({ properties: initialProperties }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState(null);
   
-  // State for Rejection Feedback Modal
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [feedbackReason, setFeedbackReason] = useState("");
   const [feedbackPropertyTitle, setFeedbackPropertyTitle] = useState("");
 
-  // Helper function to extract ID easily
   const getItemId = (item) => item?._id?.$oid || item?._id || item?.id;
 
-  // ডিলিট হ্যান্ডলার
   const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this property?")) return;
-
     try {
       await deleteOwnerBooking(id);
       setProperties(properties.filter((item) => getItemId(item) !== id));
@@ -45,29 +40,25 @@ export default function PropertiesTable({ properties: initialProperties }) {
     }
   };
 
-  // এডিট বাটন ক্লিক হ্যান্ডলার
   const handleEditClick = (property) => {
     setSelectedProperty(property);
     setIsOpen(true);
   };
 
-  // রিজেকশন ফিডব্যাক দেখার হ্যান্ডলার
   const handleViewFeedback = (property) => {
     setFeedbackPropertyTitle(property.title || "Property");
     setFeedbackReason(property.rejectionReason || "No feedback reason provided by administration.");
     setIsFeedbackOpen(true);
   };
 
-  // আপডেট ফর্ম সাবমিট হ্যান্ডলার
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const rawData = Object.fromEntries(formData.entries());
-
     const propertyId = getItemId(selectedProperty);
 
     const updatedData = {
-      ...selectedProperty, // Keep metadata intact (like status, rejectionReason)
+      ...selectedProperty,
       title: rawData.title,
       description: rawData.description,
       location: rawData.location,
@@ -78,10 +69,7 @@ export default function PropertiesTable({ properties: initialProperties }) {
       bathrooms: Number(rawData.bathrooms),
       propertySize: rawData.propertySize,
       amenities: rawData.amenities
-        ? rawData.amenities
-            .split(",")
-            .map((item) => item.trim())
-            .filter(Boolean)
+        ? rawData.amenities.split(",").map((item) => item.trim()).filter(Boolean)
         : [],
       images: rawData.imageUrls,
       extraFeatures: rawData.extraFeatures,
@@ -89,18 +77,11 @@ export default function PropertiesTable({ properties: initialProperties }) {
 
     try {
       const res = await updatedProperty(propertyId, updatedData);
-
       if (!res?.acknowledged && !res?.success) {
         toast.error("Update failed!");
         return;
       }
-
-      setProperties(
-        properties.map((item) =>
-          getItemId(item) === propertyId ? updatedData : item
-        )
-      );
-
+      setProperties(properties.map((item) => getItemId(item) === propertyId ? updatedData : item));
       toast.success("Property updated successfully!");
       setIsOpen(false);
       setSelectedProperty(null);
@@ -113,63 +94,63 @@ export default function PropertiesTable({ properties: initialProperties }) {
   const getStatusStyle = (status) => {
     switch (status?.toLowerCase()) {
       case "approved":
-        return "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 text-xs px-2.5 py-1 rounded-full font-semibold border";
+        return "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 text-xs px-2.5 py-1 rounded-full font-semibold border shadow-[0_0_8px_rgba(16,185,129,0.1)]";
       case "rejected":
-        return "bg-rose-500/10 border-rose-500/30 text-rose-400 text-xs px-2.5 py-1 rounded-full font-semibold border";
+        return "bg-rose-500/10 border-rose-500/30 text-rose-400 text-xs px-2.5 py-1 rounded-full font-semibold border shadow-[0_0_8px_rgba(244,63,94,0.1)]";
       default:
-        return "bg-amber-500/10 border-amber-500/30 text-amber-400 text-xs px-2.5 py-1 rounded-full font-semibold border";
+        return "bg-amber-500/10 border-amber-500/30 text-amber-400 text-xs px-2.5 py-1 rounded-full font-semibold border shadow-[0_0_8px_rgba(245,158,11,0.1)]";
     }
   };
 
+  // লাইটার ম্যাট ইনপুট স্টাইল ভ্যারিয়েবল
+  const inputContainerStyles = "[&_input]:bg-[#1a1a26] [&_input]:text-white [&_input]:border-white/10 [&_input]:rounded-xl [&_label]:text-slate-200 [&_label]:font-semibold [&_label]:text-xs [&_label]:mb-1.5 [&_textarea]:bg-[#1a1a26] [&_textarea]:text-white [&_textarea]:border-white/10 [&_textarea]:rounded-xl focus-within:[&_input]:border-cyan-400/50 focus-within:[&_textarea]:border-purple-500/50 transition-all";
+
   if (!properties || properties.length === 0) {
     return (
-      <div className="text-center py-10 text-slate-400 border border-dashed border-white/5 rounded-xl">
-        No properties found.
+      <div className="text-center py-12 text-slate-400 border border-dashed border-white/10 bg-[#161622]/30 rounded-xl font-medium">
+        No properties available in your repository.
       </div>
     );
   }
 
   return (
     <>
-      <Table aria-label="Properties List Table">
-        <Table.ScrollContainer>
-          <Table.Content className="min-w-175" aria-label="Owner Properties Layout">
-            <Table.Header>
-              <Table.Column isRowHeader>Property Title</Table.Column>
-              <Table.Column>Location</Table.Column>
-              <Table.Column>Type</Table.Column>
-              <Table.Column>Rent Price</Table.Column>
-              <Table.Column>Status</Table.Column>
-              <Table.Column align="end">Actions</Table.Column>
-            </Table.Header>
-            <Table.Body>
-              {properties.map((item) => {
-                const itemId = getItemId(item);
-                const isRejected = item.status?.toLowerCase() === "rejected";
+      {/* Table Global Styles Overlay for Dark Mode Visibility */}
+      <div className="[&_thead_tr]:bg-[#1a1a26] [&_thead_tr]:border-b [&_thead_tr]:border-white/10 [&_th]:text-slate-300 [&_th]:font-bold [&_th]:py-4 [&_td]:py-4 [&_tr]:border-b [&_tr]:border-white/5 hover:[&_tr]:bg-white/[0.02]">
+        <Table aria-label="Properties List Table" className="bg-transparent shadow-none">
+          <Table.ScrollContainer>
+            <Table.Content className="min-w-175" aria-label="Owner Properties Layout">
+              <Table.Header>
+                <Table.Column isRowHeader>Property Title</Table.Column>
+                <Table.Column>Location</Table.Column>
+                <Table.Column>Type</Table.Column>
+                <Table.Column>Rent Price</Table.Column>
+                <Table.Column>Status</Table.Column>
+                <Table.Column align="end">Actions</Table.Column>
+              </Table.Header>
+              <Table.Body>
+                {properties.map((item) => {
+                  const itemId = getItemId(item);
+                  const isRejected = item.status?.toLowerCase() === "rejected";
 
-                return (
-                  <Table.Row
-                    key={itemId}
-                    className="hover:bg-transparent data-[hovered=true]:bg-transparent transition-none"
-                  >
-                    <Table.Cell className="font-medium text-slate-200">
-                      {item.title}
-                    </Table.Cell>
-                    <Table.Cell className="text-slate-400">
-                      {item.location}
-                    </Table.Cell>
-                    <Table.Cell className="text-slate-400">
-                      {item.propertyType}
-                    </Table.Cell>
-                    <Table.Cell className="text-slate-300 font-semibold">
-                      ${item.price} /{" "}
-                      <span className="text-xs font-normal text-slate-500">
-                        {item.rentType}
-                      </span>
-                    </Table.Cell>
-                    <Table.Cell>
-                      {/* Wrapped inside a standard div to avoid breaking Table alignments */}
-                      <div className="flex flex-col items-start gap-1.5">
+                  return (
+                    <Table.Row key={itemId} className="transition-all duration-200">
+                      <Table.Cell className="font-semibold text-slate-200">
+                        {item.title}
+                      </Table.Cell>
+                      <Table.Cell className="text-slate-300 font-medium">
+                        {item.location}
+                      </Table.Cell>
+                      <Table.Cell className="text-slate-400">
+                        {item.propertyType}
+                      </Table.Cell>
+                      <Table.Cell className="text-slate-200 font-bold">
+                        ${item.price} /{" "}
+                        <span className="text-xs font-normal text-slate-500 uppercase tracking-wider">
+                          {item.rentType}
+                        </span>
+                      </Table.Cell>
+                      <Table.Cell>
                         <div className="flex items-center gap-2">
                           <span className={getStatusStyle(item.status)}>
                             {item.status || "Pending"}
@@ -177,125 +158,125 @@ export default function PropertiesTable({ properties: initialProperties }) {
                           {isRejected && (
                             <button
                               onClick={() => handleViewFeedback(item)}
-                              className="p-1 rounded-md bg-white/5 border border-white/10 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-all cursor-pointer"
+                              className="p-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-300 hover:text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/30 transition-all cursor-pointer"
                               title="View Rejection Feedback"
                             >
-                              <Eye size={14} />
+                              <Eye size={13} />
                             </button>
                           )}
                         </div>
-                        {/* {isRejected && item.rejectionReason && (
-                          <p className="text-[10px] text-rose-400/70 italic max-w-37.5 line-clamp-1">
-                            {item.rejectionReason}
-                          </p>
-                        )} */}
-                      </div>
-                    </Table.Cell>
-                    <Table.Cell>
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="text-cyan-400 border border-white/5 bg-white/5 hover:bg-cyan-500/10 rounded-lg cursor-pointer"
-                          onClick={() => handleEditClick(item)}
-                        >
-                          <Edit2 size={15} /> Edit
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="text-rose-400 border border-white/5 bg-white/5 hover:bg-rose-500/10 rounded-lg cursor-pointer"
-                          onClick={() => handleDelete(itemId)}
-                        >
-                          <Trash2 size={15} /> Delete
-                        </Button>
-                      </div>
-                    </Table.Cell>
-                  </Table.Row>
-                );
-              })}
-            </Table.Body>
-          </Table.Content>
-        </Table.ScrollContainer>
-      </Table>
+                      </Table.Cell>
+                      <Table.Cell>
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            size="sm"
+                            variant="none"
+                            className="text-cyan-400 border border-cyan-500/20 bg-cyan-500/5 hover:bg-cyan-500/10 rounded-lg font-semibold text-xs px-3 h-8 cursor-pointer transition-all"
+                            onClick={() => handleEditClick(item)}
+                          >
+                            <Edit2 size={13} className="mr-1" /> Edit
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="none"
+                            className="text-rose-400 border border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10 rounded-lg font-semibold text-xs px-3 h-8 cursor-pointer transition-all"
+                            onClick={() => handleDelete(itemId)}
+                          >
+                            <Trash2 size={13} className="mr-1" /> Delete
+                          </Button>
+                        </div>
+                      </Table.Cell>
+                    </Table.Row>
+                  );
+                })}
+              </Table.Body>
+            </Table.Content>
+          </Table.ScrollContainer>
+        </Table>
+      </div>
 
       {/* আপডেট মোডাল */}
       <Modal isOpen={isOpen} onOpenChange={setIsOpen}>
-        <Modal.Backdrop>
+        <Modal.Backdrop className="backdrop-blur-md bg-black/60">
           <Modal.Container placement="auto">
-            <Modal.Dialog className="sm:max-w-2xl bg-[#0e0e15] text-left border border-white/10 rounded-2xl">
-              <Modal.CloseTrigger className="cursor-pointer" onClick={() => setIsOpen(false)} />
-              <Modal.Header>
-                <Modal.Icon className="bg-cyan-500/10 text-cyan-400">
+            <Modal.Dialog className="sm:max-w-2xl bg-[#12121a] text-left border border-white/10 rounded-2xl shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
+              <Modal.CloseTrigger className="cursor-pointer text-slate-400 hover:text-white" onClick={() => setIsOpen(false)} />
+              
+              <Modal.Header className="border-b border-white/5 pb-4">
+                <Modal.Icon className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 rounded-xl">
                   <Home className="size-5" />
                 </Modal.Icon>
-                <Modal.Heading className="text-white">
-                  Update Property Information
+                <Modal.Heading className="text-white text-base font-bold">
+                  Update Asset Information
                 </Modal.Heading>
-                <p className="mt-1.5 text-xs text-slate-400">
-                  Modify the fields below to update your property post details.
+                <p className="mt-1 text-xs text-slate-400">
+                  Modify the configuration matrix logs below to alter asset structures.
                 </p>
               </Modal.Header>
 
-              <Modal.Body className="p-6 max-h-[70vh] overflow-y-auto">
+              <Modal.Body className="p-6 max-h-[65vh] overflow-y-auto space-y-4">
                 {selectedProperty && (
                   <form id="update-property-form" className="flex flex-col gap-4" onSubmit={handleUpdateSubmit}>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <TextField isRequired name="title" defaultValue={selectedProperty.title}>
+                      <TextField isRequired name="title" defaultValue={selectedProperty.title} className={inputContainerStyles}>
                         <Label>Property Title</Label>
                         <Input />
-                        <FieldError />
+                        <FieldError className="text-xs text-rose-400 mt-1" />
                       </TextField>
-                      <TextField isRequired name="location" defaultValue={selectedProperty.location}>
+                      <TextField isRequired name="location" defaultValue={selectedProperty.location} className={inputContainerStyles}>
                         <Label>Location / Address</Label>
                         <Input />
-                        <FieldError />
+                        <FieldError className="text-xs text-rose-400 mt-1" />
                       </TextField>
                     </div>
 
-                    <TextField isRequired name="description" defaultValue={selectedProperty.description}>
+                    <TextField isRequired name="description" defaultValue={selectedProperty.description} className={inputContainerStyles}>
                       <Label>Description</Label>
-                      <TextArea />
-                      <FieldError />
+                      <TextArea rows={3} />
+                      <FieldError className="text-xs text-rose-400 mt-1" />
                     </TextField>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div>
-                        <Label className="text-xs font-medium text-slate-300 mb-1 block">Property Type</Label>
+                      <div className={inputContainerStyles}>
+                        <Label className="text-xs font-semibold text-slate-200 mb-1.5 block">Property Type</Label>
                         <Select name="propertyType" placeholder="Select Type" defaultValue={selectedProperty.propertyType}>
-                          <Select.Trigger>
+                          <Select.Trigger className="bg-[#1a1a26] text-white border-white/10 rounded-xl">
                             <Select.Value />
                             <Select.Indicator />
                           </Select.Trigger>
-                          <Select.Popover>
-                            <ListBox>
-                              <ListBox.Item id="Apartment" textValue="Apartment">Apartment <ListBox.ItemIndicator /></ListBox.Item>
-                              <ListBox.Item id="Duplex" textValue="Duplex Villa">Duplex Villa <ListBox.ItemIndicator /></ListBox.Item>
-                              <ListBox.Item id="Studio" textValue="Studio Flat">Studio Flat <ListBox.ItemIndicator /></ListBox.Item>
-                              <ListBox.Item id="Commercial" textValue="Commercial Space">Commercial Space <ListBox.ItemIndicator /></ListBox.Item>
+                          <Select.Popover className="bg-[#12121a] border border-white/10 text-white rounded-xl">
+                            <ListBox className="p-1">
+                              {["Apartment", "Duplex Villa", "Studio Flat", "Commercial Space"].map(t => (
+                                <ListBox.Item key={t} id={t.split(" ")[0]} textValue={t} className="rounded-lg text-slate-200 hover:bg-white/5 hover:text-white cursor-pointer px-3 py-2 text-xs">
+                                  {t} <ListBox.ItemIndicator />
+                                </ListBox.Item>
+                              ))}
                             </ListBox>
                           </Select.Popover>
                         </Select>
                       </div>
 
-                      <TextField isRequired name="price" type="number" defaultValue={selectedProperty.price}>
+                      <TextField isRequired name="price" type="number" defaultValue={selectedProperty.price} className={inputContainerStyles}>
                         <Label>Rent Price ($)</Label>
                         <Input />
-                        <FieldError />
+                        <FieldError className="text-xs text-rose-400 mt-1" />
                       </TextField>
 
-                      <div>
-                        <Label className="text-xs font-medium text-slate-300 mb-1 block">Rent Type</Label>
+                      <div className={inputContainerStyles}>
+                        <Label className="text-xs font-semibold text-slate-200 mb-1.5 block">Rent Type</Label>
                         <Select name="rentType" placeholder="Select Period" defaultValue={selectedProperty.rentType}>
-                          <Select.Trigger>
+                          <Select.Trigger className="bg-[#1a1a26] text-white border-white/10 rounded-xl">
                             <Select.Value />
                             <Select.Indicator />
                           </Select.Trigger>
-                          <Select.Popover>
-                            <ListBox>
-                              <ListBox.Item id="Monthly" textValue="Monthly">Monthly <ListBox.ItemIndicator /></ListBox.Item>
-                              <ListBox.Item id="Weekly" textValue="Weekly">Weekly <ListBox.ItemIndicator /></ListBox.Item>
-                              <ListBox.Item id="Daily" textValue="Daily">Daily <ListBox.ItemIndicator /></ListBox.Item>
+                          <Select.Popover className="bg-[#12121a] border border-white/10 text-white rounded-xl">
+                            <ListBox className="p-1">
+                              {["Monthly", "Weekly", "Daily"].map(p => (
+                                <ListBox.Item key={p} id={p} textValue={p} className="rounded-lg text-slate-200 hover:bg-white/5 hover:text-white cursor-pointer px-3 py-2 text-xs">
+                                  {p} <ListBox.ItemIndicator />
+                                </ListBox.Item>
+                              ))}
                             </ListBox>
                           </Select.Popover>
                         </Select>
@@ -303,45 +284,49 @@ export default function PropertiesTable({ properties: initialProperties }) {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <TextField isRequired name="bedrooms" type="number" defaultValue={selectedProperty.bedrooms}>
+                      <TextField isRequired name="bedrooms" type="number" defaultValue={selectedProperty.bedrooms} className={inputContainerStyles}>
                         <Label>Bedrooms</Label>
                         <Input min={0} />
-                        <FieldError />
+                        <FieldError className="text-xs text-rose-400 mt-1" />
                       </TextField>
-                      <TextField isRequired name="bathrooms" type="number" defaultValue={selectedProperty.bathrooms}>
+                      <TextField isRequired name="bathrooms" type="number" defaultValue={selectedProperty.bathrooms} className={inputContainerStyles}>
                         <Label>Bathrooms</Label>
                         <Input min={0} />
-                        <FieldError />
+                        <FieldError className="text-xs text-rose-400 mt-1" />
                       </TextField>
-                      <TextField isRequired name="propertySize" defaultValue={selectedProperty.propertySize}>
+                      <TextField isRequired name="propertySize" defaultValue={selectedProperty.propertySize} className={inputContainerStyles}>
                         <Label>Property Size</Label>
                         <Input />
-                        <FieldError />
+                        <FieldError className="text-xs text-rose-400 mt-1" />
                       </TextField>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <TextField name="amenities" defaultValue={Array.isArray(selectedProperty.amenities) ? selectedProperty.amenities.join(", ") : selectedProperty.amenities || ""}>
+                      <TextField name="amenities" defaultValue={Array.isArray(selectedProperty.amenities) ? selectedProperty.amenities.join(", ") : selectedProperty.amenities || ""} className={inputContainerStyles}>
                         <Label>Amenities (Comma Separated)</Label>
                         <Input />
                       </TextField>
-                      <TextField isRequired name="imageUrls" defaultValue={Array.isArray(selectedProperty.images) ? selectedProperty.images.join(", ") : selectedProperty.images || ""}>
+                      <TextField isRequired name="imageUrls" defaultValue={Array.isArray(selectedProperty.images) ? selectedProperty.images.join(", ") : selectedProperty.images || ""} className={inputContainerStyles}>
                         <Label>Image URLs (Comma Separated)</Label>
                         <Input />
-                        <FieldError />
+                        <FieldError className="text-xs text-rose-400 mt-1" />
                       </TextField>
                     </div>
 
-                    <TextField name="extraFeatures" defaultValue={selectedProperty.extraFeatures}>
+                    <TextField name="extraFeatures" defaultValue={selectedProperty.extraFeatures} className={inputContainerStyles}>
                       <Label>Extra Features / Notes</Label>
                       <Input />
                     </TextField>
                   </form>
                 )}
               </Modal.Body>
-              <Modal.Footer className="border-t border-white/5 p-4 flex justify-end gap-2">
-                <Button variant="secondary" className="cursor-pointer" onClick={() => setIsOpen(false)}>Cancel</Button>
-                <Button type="submit" form="update-property-form" className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white cursor-pointer">Save Changes</Button>
+              <Modal.Footer className="border-t border-white/5 p-4 flex justify-end gap-2 bg-[#161622]/50">
+                <Button variant="none" className="cursor-pointer border border-white/10 rounded-xl text-slate-300 text-xs font-semibold hover:bg-white/5 px-4 h-9" onClick={() => setIsOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" form="update-property-form" className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-semibold text-xs rounded-xl shadow-md shadow-purple-500/10 px-5 h-9 cursor-pointer">
+                  Save Changes
+                </Button>
               </Modal.Footer>
             </Modal.Dialog>
           </Modal.Container>
@@ -350,27 +335,28 @@ export default function PropertiesTable({ properties: initialProperties }) {
 
       {/* রিজেকশন ফিডব্যাক মোডাল */}
       <Modal isOpen={isFeedbackOpen} onOpenChange={setIsFeedbackOpen}>
-        <Modal.Backdrop>
+        <Modal.Backdrop className="backdrop-blur-md bg-black/60">
           <Modal.Container placement="auto">
-            <Modal.Dialog className="sm:max-w-md bg-[#0e0e15] text-left border border-rose-500/20 rounded-2xl">
-              <Modal.CloseTrigger className="cursor-pointer" onClick={() => setIsFeedbackOpen(false)} />
-              <Modal.Header>
-                <Modal.Icon className="bg-rose-500/10 text-rose-400 border border-rose-500/20">
+            <Modal.Dialog className="sm:max-w-md bg-[#12121a] text-left border border-rose-500/30 rounded-2xl shadow-2xl">
+              <Modal.CloseTrigger className="cursor-pointer text-slate-400 hover:text-white" onClick={() => setIsFeedbackOpen(false)} />
+              <Modal.Header className="pb-2">
+                <Modal.Icon className="bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-xl">
                   <AlertCircle className="size-5" />
                 </Modal.Icon>
-                <Modal.Heading className="text-white">
-                  Rejection Feedback
+                <Modal.Heading className="text-white text-base font-bold">
+                  Rejection Analysis Log
                 </Modal.Heading>
                 <p className="mt-1 text-xs text-slate-400">
-                  Review comments for: <span className="text-slate-200 font-semibold">{feedbackPropertyTitle}</span>
+                  Review comments for: <span className="text-cyan-400 font-semibold">{feedbackPropertyTitle}</span>
                 </p>
               </Modal.Header>
-              <Modal.Body className="p-5 text-sm text-slate-300 leading-relaxed bg-white/2 rounded-xl border border-white/5 m-5">
-                <p className="whitespace-pre-wrap font-sans">{feedbackReason}</p>
+              <Modal.Body className="p-4 text-sm text-slate-200 leading-relaxed bg-[#1a1a26] rounded-xl border border-white/10 m-5">
+                <p className="whitespace-pre-wrap font-medium font-sans text-xs">{feedbackReason}</p>
               </Modal.Body>
-              <Modal.Footer className="border-t border-white/5 p-4 flex justify-end">
+              <Modal.Footer className="border-t border-white/5 p-4 flex justify-end bg-[#161622]/50">
                 <Button
-                  className="bg-rose-600 text-white hover:bg-rose-500 font-medium transition-colors cursor-pointer"
+                  variant="none"
+                  className="bg-rose-600/90 text-white hover:bg-rose-600 font-semibold text-xs rounded-xl px-4 h-9 transition-colors cursor-pointer"
                   onClick={() => setIsFeedbackOpen(false)}
                 >
                   Close Review

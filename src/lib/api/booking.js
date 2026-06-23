@@ -6,7 +6,7 @@ export const getAllBookings = async() => {
 }
 
 export const getBookingByBuyer = async(email) => {
-    return serverFetch(`/tenantBookings/${email}`)
+    return protectedFetch(`/tenantBookings/${email}`)
 }
 export const createBooking = async (bookingData) => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/bookings`, {
