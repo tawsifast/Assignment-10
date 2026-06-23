@@ -1,6 +1,7 @@
 import FilterablePropertyGrid from "@/components/FilterablePropertyGrid";
 import { getProperty } from "@/lib/api/property";
 
+
 export default async function AllPropertyPage({ searchParams }) {
   const sParams = await searchParams;
   console.log(sParams, "sparams");
@@ -8,6 +9,7 @@ export default async function AllPropertyPage({ searchParams }) {
   const type = sParams.type || "";
   const order = sParams.order || "";
   const params = new URLSearchParams();
+  const page = sParams.page || "1";
   if (search) {
     params.set("search", search);
   }
@@ -17,9 +19,11 @@ export default async function AllPropertyPage({ searchParams }) {
   if (order) {
     params.set("order", order);
   }
-  console.log(params, "params");
-  const properties = (await getProperty(params)) || [];
-  const approvedProperties = properties.filter((p) => p.status === "Approved");
+  params.set("page", page); 
+  const data = await getProperty(params);
+  const items = data?.items || [];
+  const total = data?.total || 0;
+  const approvedItems = items.filter((p) => p.status === "Approved");
 
   return (
     <main className="min-h-screen bg-[#0a0a0f] text-slate-100 pt-28 pb-20 px-4 md:px-8 relative overflow-hidden">
@@ -45,7 +49,11 @@ export default async function AllPropertyPage({ searchParams }) {
         </div>
 
         {/* Handing over raw structural approved data down to the Interactive Layer */}
-        <FilterablePropertyGrid approvedProperties={approvedProperties} />
+        <FilterablePropertyGrid
+          approvedProperties={approvedItems}
+          total={total}
+          currentPage={parseInt(page)}
+        />
       </div>
     </main>
   );
