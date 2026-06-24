@@ -1,15 +1,35 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Button, Input, Select } from "@heroui/react"; 
+import { Button, Input, Select, ListBox, Label } from "@heroui/react";
 import { Search, MapPin, Home, DollarSign } from "lucide-react";
 
-// HeroUI v3-এর জন্য কাস্টম অবজেক্ট ম্যাপিং যাতে কোনো এরর ছাড়াই ড্রপডাউন আইটেম রেন্ডার হয়
-const search = ({ children, ...props }) => (
-  <option {...props}>{children}</option>
-);
-
 export default function BannerSearchForm({ propertyTypes }) {
+  const router = useRouter();
+
+  // ১. সকল ইনপুটের জন্য স্টেট ডিক্লেয়ারেশন
+  const [location, setLocation] = useState("");
+  const [selectedType, setSelectedType] = useState("");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+
+  // ২. সার্চ সাবমিট হ্যান্ডলার (URL কুয়েরি প্যারামিটার তৈরি)
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+
+    if (location.trim()) params.set("search", location.trim());
+    if (selectedType && selectedType !== "all") params.set("type", selectedType);
+    if (minPrice) params.set("minPrice", minPrice);
+    if (maxPrice) params.set("maxPrice", maxPrice);
+
+    // প্রথম পেজ থেকে সার্চ রেজাল্ট শুরু হবে
+    params.set("page", "1");
+
+    router.push(`/all-client/all-properties?${params.toString()}`);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -17,44 +37,70 @@ export default function BannerSearchForm({ propertyTypes }) {
       transition={{ duration: 0.5, delay: 0.4 }}
       className="backdrop-blur-xl bg-white/[0.03] border border-white/[0.08] shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] p-4 md:p-6 rounded-3xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end text-left"
     >
-      {/* Location */}
+      {/* Location Input */}
       <div className="space-y-2">
-        <label id="location-label" className="text-xs font-semibold uppercase tracking-wider text-cyan-400 flex items-center gap-1">
+        <label
+          id="location-label"
+          className="text-xs font-semibold uppercase tracking-wider text-cyan-400 flex items-center gap-1"
+        >
           <MapPin size={14} /> Location
         </label>
         <Input
           variant="flat"
           placeholder="Where to?"
           aria-labelledby="location-label"
-        //   className="dark"
-          className={{ inputWrapper: "bg-white/[0.05] hover:bg-white/[0.1]" }}
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          className={{ inputWrapper: "bg-white/[0.05] hover:bg-white/[0.1] text-slate-200" }}
         />
       </div>
 
-      {/* Type */}
+      {/* HeroUI Custom Composition Property Type Dropdown */}
       <div className="space-y-2">
-        <label id="type-label" className="text-xs font-semibold uppercase tracking-wider text-purple-400 flex items-center gap-1">
-          <Home size={14} /> Type
-        </label>
-        <Select
-          placeholder="Property Type"
-          variant="flat"
-          aria-labelledby="type-label"
-        //   className="dark"
-          className={{ trigger: "bg-white/[0.05] hover:bg-white/[0.1]" }}
+        <Select 
+          placeholder="Select Type"
+          selectedKey={selectedType}
+          onSelectionChange={(key) => setSelectedType(String(key))}
         >
-          {propertyTypes.map((type) => (
-            // আপনার রিকোয়ারমেন্ট অনুযায়ী এখানে <search> ট্যাগ ব্যবহার করা হয়েছে
-            <search key={type} value={type} className="text-black dark:text-white">
-              {type}
-            </search>
-          ))}
+          <Label className="text-xs font-semibold uppercase tracking-wider text-purple-400 flex items-center gap-1">
+            <Home size={14} /> Type
+          </Label>
+          <Select.Trigger className="bg-white/[0.05] hover:bg-white/[0.1] border border-white/5 text-slate-200 rounded-xl h-10 px-3 flex items-center justify-between text-sm transition-colors cursor-pointer w-full">
+            <Select.Value />
+            <Select.Indicator className="text-slate-500 size-4" />
+          </Select.Trigger>
+          <Select.Popover className="bg-[#0c0c14] border border-white/10 rounded-xl shadow-2xl overflow-hidden mt-1 text-slate-200 min-w-[200px]">
+            <ListBox className="p-1">
+              <ListBox.Item
+                id="all"
+                textValue="All Typologies"
+                className="p-2.5 rounded-lg text-sm hover:bg-white/5 cursor-pointer flex items-center justify-between"
+              >
+                All Typologies
+                <ListBox.ItemIndicator className="text-cyan-400" />
+              </ListBox.Item>
+              {propertyTypes.map((type) => (
+                <ListBox.Item
+                  key={type}
+                  id={type}
+                  textValue={type}
+                  className="p-2.5 rounded-lg text-sm hover:bg-white/5 cursor-pointer flex items-center justify-between"
+                >
+                  {type}
+                  <ListBox.ItemIndicator className="text-cyan-400" />
+                </ListBox.Item>
+              ))}
+            </ListBox>
+          </Select.Popover>
         </Select>
       </div>
 
-      {/* Min Price */}
+      {/* Min Price Input */}
       <div className="space-y-2">
-        <label id="min-price-label" className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+        <label
+          id="min-price-label"
+          className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1"
+        >
           <DollarSign size={14} /> Min Price
         </label>
         <Input
@@ -62,14 +108,18 @@ export default function BannerSearchForm({ propertyTypes }) {
           variant="flat"
           placeholder="$ Min"
           aria-labelledby="min-price-label"
-        //   className="dark"
-          className={{ inputWrapper: "bg-white/[0.05] hover:bg-white/[0.1]" }}
+          value={minPrice}
+          onChange={(e) => setMinPrice(e.target.value)}
+          className={{ inputWrapper: "bg-white/[0.05] hover:bg-white/[0.1] text-slate-200" }}
         />
       </div>
 
-      {/* Max Price */}
+      {/* Max Price Input */}
       <div className="space-y-2">
-        <label id="max-price-label" className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+        <label
+          id="max-price-label"
+          className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1"
+        >
           <DollarSign size={14} /> Max Price
         </label>
         <Input
@@ -77,14 +127,16 @@ export default function BannerSearchForm({ propertyTypes }) {
           variant="flat"
           placeholder="$ Max"
           aria-labelledby="max-price-label"
-        //   className="dark"
-          className={{ inputWrapper: "bg-white/[0.05] hover:bg-white/[0.1]" }}
+          value={maxPrice}
+          onChange={(e) => setMaxPrice(e.target.value)}
+          className={{ inputWrapper: "bg-white/[0.05] hover:bg-white/[0.1] text-slate-200" }}
         />
       </div>
 
-      {/* Search Button */}
+      {/* Search Trigger Button */}
       <Button
-        className="w-full h-12 bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-bold rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] transition-all duration-300"
+        onClick={handleSearch}
+        className="w-full h-10 bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-bold rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] transition-all duration-300 h-10"
         startContent={<Search size={18} />}
       >
         Search

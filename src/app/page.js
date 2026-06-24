@@ -6,17 +6,17 @@ import RentalStatistics from "@/components/RentalStatistics";
 import TopLocations from "@/components/TopLocations";
 import WhyChooseUs from "@/components/WhyChooseUs";
 
-
 export default function Home() {
   return (
-    <div className="">  
-      <Banner/>
-      <Featured/>
-      <WhyChooseUs/>
-      <CustomerReviews/>
-      <TopLocations/>
-      <RentalStatistics/>
-      <Footer/>
+    <div className="">
+      {/* <HomeBanner/> */}
+      <Banner />
+      <Featured />
+      <WhyChooseUs />
+      <CustomerReviews />
+      <TopLocations />
+      <RentalStatistics />
+      <Footer />
     </div>
   );
 }
