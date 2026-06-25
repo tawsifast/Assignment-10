@@ -16,6 +16,7 @@ import { Modal, Button, TextField, Label, Input } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { addFavorite } from "@/lib/actions/favourite";
 import { createBooking, createStripeSession } from "@/lib/api/booking";
+import toast from "react-hot-toast";
 
 export default function PropertyActionBlock({ property, user }) {
   const router = useRouter();
@@ -52,7 +53,7 @@ export default function PropertyActionBlock({ property, user }) {
   };
 
   const handleBookingSubmit = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
 
     if (!moveInDate || !contactNumber) {
       alert("Please fill in the required fields.");
@@ -62,7 +63,7 @@ export default function PropertyActionBlock({ property, user }) {
     setBookingLoading(true);
     try {
       const bookingData = {
-        propertyId: property._id,
+        propertyId: property._id?.toString() || property._id,
         title: property.title,
         location: property.location,
         price: property.price,
@@ -74,24 +75,28 @@ export default function PropertyActionBlock({ property, user }) {
         additionalNotes: notes,
         bookedAt: new Date().toISOString(),
       };
-      console.log("Saving to MongoDB ,bookingData",bookingData);
+      console.log("Saving to MongoDB ,bookingData", bookingData);
       const saveBooking = await createBooking(bookingData);
+      if (saveBooking.status === 409) {
+        toast.error("You have already booked this property!");
+        setBookingLoading(false);
+        return;
+      }
 
       sessionStorage.setItem("pendingBooking", JSON.stringify(bookingData));
 
       const session = await createStripeSession({
-      amount: property.price,
-      title: property.title,
-      propertyId: property._id,
-      email: user.email,
-      bookingId: saveBooking.insertedId, 
-    });
+        amount: property.price,
+        title: property.title,
+        propertyId: property._id,
+        email: user.email,
+        bookingId: saveBooking.insertedId,
+      });
 
-    // 4️⃣ Redirect to Stripe payment page
-    if (session.url) {
-      window.location.href = session.url;
-    }
-
+      // 4️⃣ Redirect to Stripe payment page
+      if (session.url) {
+        window.location.href = session.url;
+      }
     } catch (error) {
       console.error(error);
     } finally {
