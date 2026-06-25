@@ -24,6 +24,7 @@ export const createBooking = async (bookingData) => {
   return res.json();
 };
 
+
 export const createStripeSession = async (data) => {
   const res = await fetch("/api/checkout_sessions", {
     method: "POST",

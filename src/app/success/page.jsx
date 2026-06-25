@@ -7,7 +7,6 @@ export default async function PaymentSuccessPage({ searchParams }) {
   const params = await searchParams;
   const session_id = params?.session_id;
 
-  // ❌ যদি session_id না আসে, তাহলে হোমপেজে ব্যাক করবে
   if (!session_id) {
     return redirect("/");
   }

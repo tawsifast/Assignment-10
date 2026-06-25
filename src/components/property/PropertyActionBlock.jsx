@@ -52,7 +52,7 @@ export default function PropertyActionBlock({ property, user }) {
   };
 
   const handleBookingSubmit = async (e) => {
-    e.preventDefault(); // ফর্ম রিলোড আটকানোর জন্য
+    e.preventDefault(); 
 
     if (!moveInDate || !contactNumber) {
       alert("Please fill in the required fields.");
@@ -77,14 +77,14 @@ export default function PropertyActionBlock({ property, user }) {
       console.log("Saving to MongoDB ,bookingData",bookingData);
       const saveBooking = await createBooking(bookingData);
 
-      // লোকাল স্টোরেজে ব্যাকআপ সেভ করে টেস্ট করার সুবিধার্থে (পরবর্তীতে রিয়েল এপিআই দিয়ে রিপ্লেস করবেন)
       sessionStorage.setItem("pendingBooking", JSON.stringify(bookingData));
 
       const session = await createStripeSession({
       amount: property.price,
+      title: property.title,
       propertyId: property._id,
       email: user.email,
-      bookingId: saveBooking.insertedId, // ✅ নতুন লাইন
+      bookingId: saveBooking.insertedId, 
     });
 
     // 4️⃣ Redirect to Stripe payment page

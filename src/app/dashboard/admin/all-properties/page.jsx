@@ -15,7 +15,7 @@ const AllPropertiesPage = async () => {
                     Property Asset Control
                 </h1>
                 <p className="text-xs text-slate-500 font-mono">
-                    System Node // Administrative Inventory Verification
+                    System Node  Administrative Inventory Verification
                 </p>
             </div>
             

@@ -38,6 +38,9 @@ export const auth = betterAuth({
   plugins:[
     admin()
   ],
+  advanced:{
+    disableOriginCheck:true
+  }
   // session:{
   //   cookieCache:{
   //     enabled: true,
