@@ -1,12 +1,18 @@
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
+import { getUserSession } from "@/lib/core/session";
 
 
-const DashBoardlayout = ({children}) => {
-    return (
-        <div className='flex min-h-screen'>
-            <DashboardSidebar/>
-            <div className='flex-1'>{children}</div>
-        </div>
-    );
-};
-export default DashBoardlayout;
+export default async function DashboardLayout({ children }) {
+  const user = await getUserSession();
+  const userRole = user?.role?.toLowerCase() || "tenant";
+
+  return (
+    <div className="flex flex-col lg:flex-row min-h-screen bg-[#0a0a0f]">
+      <DashboardSidebar currentRole={userRole} />
+      
+      <main className="flex-1 px-4 pb-10 pt-28 lg:pt-6 lg:p-6 text-white w-full">
+        {children}
+      </main>
+    </div>
+  );
+}
