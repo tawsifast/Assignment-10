@@ -44,6 +44,7 @@ const SigninPage = () => {
     try {
       const data = await authClient.signIn.social({
         provider: "google",
+        callbackURL: "/",
         newUserOptions: {
           data: {
             role: "tenant"

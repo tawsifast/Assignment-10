@@ -51,6 +51,7 @@ const SignupPage = () => {
     try {
       const data = await authClient.signIn.social({
         provider: "google",
+        callbackURL: "/",
         newUserOptions: {
           data: {
             role: "tenant"
@@ -132,7 +133,9 @@ const SignupPage = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
               {/* Tenant Option */}
-              <Radio value="tenant" className="border border-white/[0.06] rounded-xl p-3.5 bg-[#0d0e16]/50 hover:bg-white/[0.02] data-[selected=true]:border-cyan-500/50 data-[selected=true]:bg-cyan-500/[0.03] transition-all cursor-pointer">
+              <Radio 
+              value="tenant" 
+              className="border border-white/[0.06] rounded-xl p-3.5 bg-[#0d0e16]/50 hover:bg-white/[0.02] data-[selected=true]:border-cyan-500/50 data-[selected=true]:bg-cyan-500/[0.03] transition-all cursor-pointer">
                 <Radio.Content>
                   <Radio.Control>
                     <Radio.Indicator />
